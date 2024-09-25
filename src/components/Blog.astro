@@ -44,12 +44,14 @@ const years = blog.data.firstPostDate
                 </a>
             </h2>
             <ul class="mt-4 list-inside list-disc">
-                {years ? <li>{`Started posting ${years} years ago`}</li> : ""}
                 {
-                    blog.data.postCount ? (
+                    years && (
+                        <li>{`First posted ${years} ${years > 1 ? "years" : "year"} ago`}</li>
+                    )
+                }
+                {
+                    blog.data.postCount && (
                         <li>{`${blog.data.postCount} posts`}</li>
-                    ) : (
-                        ""
                     )
                 }
             </ul>
