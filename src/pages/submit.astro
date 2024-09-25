@@ -1,0 +1,143 @@
+---
+import { getSession } from "auth-astro/server";
+import Layout from "../components/Layout.astro";
+import { ArrowRight } from "lucide-astro";
+---
+
+<Layout title="Submit | Reading Web Dev">
+    <main class="px-16 py-6">
+        <section class="mx-auto max-w-screen-xl">
+            <h1 class="text-center text-2xl font-bold leading-none">
+                Submit a blog
+            </h1>
+            <form date-submit-form class="mx-auto mt-12 max-w-lg">
+                <h2 class="text-lg font-bold">Submission criteria</h2>
+                <ul class="mt-2 list-disc pl-4">
+                    <li>Primarily focused on web development</li>
+                    <li>
+                        Is a stand alone website (not Medium or Stack Overflow
+                        etc.)
+                    </li>
+                    <li>Includes at least 10 posts</li>
+                    <li>Updated within the last 10 years</li>
+                    <li>Author can be an individual or company</li>
+                    <li>Not primarily be for SEO or marketing purposes</li>
+                    <li>Is writting in English (for now)</li>
+                    <li>Not written by an LLM</li>
+                </ul>
+                <div class="mt-6 space-y-4">
+                    <label class="block">
+                        <p class="font-bold">Title</p>
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="Star Wars"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        />
+                        <p class="mt-1 text-sm text-stone-700">
+                            Use the name of the author if the blog does not have
+                            a title.
+                        </p>
+                    </label>
+                    <label class="mt-6 block">
+                        <p class="font-bold">URL</p>
+                        <input
+                            type="url"
+                            name="title"
+                            placeholder="https://www.starwars.com/news"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        />
+                        <p class="mt-1 text-sm text-stone-700">
+                            If the homepage is not focused on posts, use the
+                            blog listing url instead.
+                        </p>
+                    </label>
+                    <label class="mt-6 block">
+                        <p class="font-bold">Author</p>
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="Han Solo"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        />
+                    </label>
+
+                    <label class="mt-6 block">
+                        <p class="font-bold">Description</p>
+                        <textarea
+                            name="body"
+                            placeholder="A long time ago in a galaxy far, far away..."
+                            class="mt-1 block w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        ></textarea>
+                        <p class="mt-1 text-sm text-stone-700">
+                            A sentence or two about the blog, short and sweet.
+                        </p>
+                    </label>
+                    <label class="mt-6 block">
+                        <p class="font-bold">Start year</p>
+                        <input
+                            type="number"
+                            name="title"
+                            placeholder="YYYY"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        />
+                        <p class="mt-1 text-sm text-stone-700">
+                            The year the blog's first post was published.
+                        </p>
+                    </label>
+                    <label class="mt-6 block">
+                        <p class="font-bold">Post count</p>
+                        <select
+                            name="post_count"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        >
+                            <option value="10">10 +</option>
+                            <option value="25">25 +</option>
+                            <option value="50">50 +</option>
+                            <option value="100">100 +</option>
+                            <option value="250">250 +</option>
+                            <option value="500">500 +</option>
+                            <option value="1000">1000 +</option>
+                        </select>
+                        <p class="mt-1 text-sm text-stone-700">
+                            Since this changes frequently select a range. It can
+                            be increased later.
+                        </p>
+                    </label>
+                    <label class="mt-6 block">
+                        <p class="font-bold">Tags</p>
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="Frontend, CSS, React"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        />
+                        <p class="mt-1 text-sm text-stone-700">
+                            Max 4 tags, comma separated.
+                        </p>
+                    </label>
+                    <label class="mt-6 block">
+                        <p class="font-bold">Your relation to the blog</p>
+                        <select
+                            name="post_count"
+                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
+                        >
+                            <option value="author">Author</option>
+                            <option value="reader">Reader</option>
+                        </select>
+                        <p class="mt-1 text-sm text-stone-700">
+                            This just helps us know who is submitting the blog.
+                        </p>
+                    </label>
+                </div>
+                <button
+                    type="submit"
+                    class="mt-6 flex w-fit items-center justify-center gap-2 rounded bg-stone-800 px-4 py-3 text-center font-bold leading-none text-stone-50 hover:bg-stone-700"
+                >
+                    Submit
+                    <ArrowRight class="size-5" />
+                </button>
+            </form>
+        </section>
+    </main>
+</Layout>

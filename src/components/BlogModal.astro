@@ -1,0 +1,102 @@
+---
+import { X } from "lucide-astro";
+---
+
+<div
+    data-blog-modal
+    class="fixed inset-0 hidden size-full items-center justify-center [&.is-active]:flex"
+>
+    <div
+        data-blog-modal-overlay
+        class="absolute inset-0 size-full bg-stone-900/20"
+    >
+    </div>
+    <div
+        class="bg-clr-background relative mx-auto w-full max-w-2xl rounded-lg rounded-tl-none p-6 shadow-xl"
+    >
+        <button
+            data-blog-modal-close
+            class="bg-clr-background absolute -left-10 top-0 flex size-10 items-center justify-center rounded-l-lg"
+        >
+            <X class="size-6" />
+        </button>
+        <div data-blog-modal-content></div>
+    </div>
+</div>
+
+<script>
+    function openModal(trigger: HTMLAnchorElement) {
+        const href = trigger.href;
+        const slug = trigger.getAttribute("data-blog-modal-trigger")!;
+
+        const modal = document.querySelector(
+            "[data-blog-modal]"
+        ) as HTMLDivElement;
+
+        const modalContent = modal.querySelector(
+            "[data-blog-modal-content]"
+        ) as HTMLDivElement;
+
+        const template = document.querySelector(
+            `[data-blog-modal-template="${slug}"]`
+        ) as HTMLTemplateElement;
+
+        if (template) {
+            const content = template.content.cloneNode(true);
+            modalContent.appendChild(content);
+        }
+
+        modal.classList.add("is-active");
+        window.history.pushState({}, "", href);
+    }
+
+    function closeModal() {
+        const modal = document.querySelector(
+            "[data-blog-modal]"
+        ) as HTMLDivElement;
+
+        const modalContent = modal.querySelector(
+            "[data-blog-modal-content]"
+        ) as HTMLDivElement;
+
+        if (modal.classList.contains("is-active")) {
+            modal.classList.remove("is-active");
+            modalContent.innerHTML = "";
+            window.history.back();
+        }
+    }
+
+    document.addEventListener(
+        "click",
+        function (event) {
+            if (event.target instanceof Element) {
+                if (event.target.closest("[data-blog-modal-trigger]")) {
+                    event.preventDefault();
+                    openModal(
+                        event.target.closest(
+                            "[data-blog-modal-trigger]"
+                        ) as HTMLAnchorElement
+                    );
+                    return;
+                }
+
+                if (event.target.closest("[data-blog-modal-close]")) {
+                    closeModal();
+                    return;
+                }
+
+                if (event.target.closest("[data-blog-modal-overlay]")) {
+                    closeModal();
+                    return;
+                }
+            }
+        },
+        true
+    );
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeModal();
+        }
+    });
+</script>

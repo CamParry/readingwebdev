@@ -1,0 +1,27 @@
+---
+interface Props {
+    title: string;
+    href: string;
+    isActive?: boolean;
+}
+
+const { title, href, isActive } = Astro.props;
+---
+
+{
+    isActive ? (
+        <span
+            aria-current="page"
+            class="bg-clr-foreground-active text-clr-text-inverted rounded-full px-2 pb-1 pt-0.5 text-sm leading-none"
+        >
+            {title}
+        </span>
+    ) : (
+        <a
+            href={href}
+            class="bg-clr-foreground hover:bg-clr-foreground-hover rounded-full px-2 pb-1 pt-0.5 text-sm leading-none transition-all"
+        >
+            {title}
+        </a>
+    )
+}

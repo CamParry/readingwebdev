@@ -1,0 +1,42 @@
+---
+import { getSearchParam } from "../utils/getSearchParam";
+
+const sort = getSearchParam(
+    Astro.url,
+    "sort",
+    ["newest", "oldest", "daily"],
+    "daily"
+);
+---
+
+<form data-sort-form class="flex items-center gap-2">
+    <label for="sort" class="font-bold">Sort by</label>
+    <select
+        name="sort"
+        id="sort"
+        class="bg-clr-background hover:bg-clr-foreground rounded border-none py-2 pl-2 leading-none transition-all"
+    >
+        <option value="daily" selected={sort === "daily"}
+            >random daily order</option
+        >
+        <option value="newest" selected={sort === "newest"}
+            >most recently added</option
+        >
+    </select>
+    <input type="submit" value="" />
+</form>
+<script>
+    document.addEventListener("change", (event) => {
+        if (event.target instanceof Element) {
+            if (event.target.closest("[data-sort-form]")) {
+                const form = event.target.closest(
+                    "[data-sort-form]"
+                ) as HTMLFormElement;
+                const submit = form.querySelector(
+                    'input[type="submit"]'
+                ) as HTMLInputElement;
+                submit?.click();
+            }
+        }
+    });
+</script>

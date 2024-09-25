@@ -1,0 +1,65 @@
+---
+import type { Params } from "astro";
+import { ArrowLeft } from "lucide-astro";
+import Blog from "../../components/Blog.astro";
+import Card from "../../components/Card.astro";
+import Layout from "../../components/Layout.astro";
+import SortForm from "../../components/SortForm.astro";
+import { tags } from "../../content/tags";
+import { getBlogs } from "../../db";
+import { getSearchParam } from "../../utils/getSearchParam";
+import TagCloud from "../../components/TagCloud.astro";
+import CardList from "../../components/CardList.astro";
+
+const sort = getSearchParam(
+    Astro.url,
+    "sort",
+    ["newest", "oldest", "daily"],
+    "daily"
+);
+
+const { tag } = Astro.params as Params;
+
+if (!tag || !(tag in tags)) {
+    return new Response(null, { status: 404 });
+}
+
+const blogs = await getBlogs({
+    sort,
+    tag,
+});
+
+const title = tags[tag as keyof typeof tags];
+---
+
+<Layout title={`${title} | Reading Web Dev`}>
+    <main class="mx-auto w-full max-w-screen-lg space-y-12 py-6">
+        <header class="flex h-10 items-center justify-between gap-2">
+            <a
+                href="/explore"
+                class="flex w-20 items-center gap-2 rounded px-2 py-2 leading-none hover:bg-stone-200"
+            >
+                <ArrowLeft class="size-5" />
+                Back
+            </a>
+            <h2 class="text-2xl font-bold leading-none">{title}</h2>
+            <div class="w-20"></div>
+        </header>
+        <div class="space-y-6">
+            <TagCloud center class="mx-auto max-w-screen-md" />
+            <SortForm />
+            <CardList>
+                {blogs.map((blog) => <Card blog={blog} />)}
+            </CardList>
+        </div>
+    </main>
+</Layout>
+<div>
+    {
+        blogs.map((blog) => (
+            <template data-blog-modal-template={blog.slug}>
+                <Blog blog={blog} />
+            </template>
+        ))
+    }
+</div>

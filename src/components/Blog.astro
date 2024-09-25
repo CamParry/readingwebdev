@@ -1,0 +1,88 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { ArrowUpRightFromSquare } from "lucide-astro";
+import { calculateYearsSince } from "../utils/calculateYearsSince";
+
+interface Props {
+    blog: CollectionEntry<"blogs">;
+}
+
+const { blog } = Astro.props;
+
+const years = blog.data.firstPostDate
+    ? calculateYearsSince(new Date(blog.data.firstPostDate))
+    : null;
+---
+
+<section data-blog-content class="mx-auto w-full max-w-2xl">
+    {
+        blog.data.image && (
+            <div class="">
+                <a
+                    href={blog.data.url}
+                    target="_blank"
+                    class="inline-block h-full w-auto"
+                >
+                    <img
+                        class="border-clr-border h-full w-auto overflow-hidden rounded border object-cover"
+                        src={blog.data.image}
+                        alt=""
+                    />
+                </a>
+            </div>
+        )
+    }
+    <div class="mt-6 flex justify-between">
+        <div class="">
+            <h2 class="text-xl font-bold leading-none">
+                <a
+                    href={blog.data.url}
+                    target="_blank"
+                    class="mt-2 hover:underline"
+                >
+                    {blog.data.author}
+                </a>
+            </h2>
+            <ul class="mt-4 list-inside list-disc">
+                {years ? <li>{`Started posting ${years} years ago`}</li> : ""}
+                {
+                    blog.data.postCount ? (
+                        <li>{`${blog.data.postCount} posts`}</li>
+                    ) : (
+                        ""
+                    )
+                }
+            </ul>
+        </div>
+        <!-- <button
+            data-like={blog.slug}
+            class={`group flex h-8 items-center justify-center gap-2 rounded px-2 hover:bg-stone-200 ${likedByUser ? "is-active" : ""}`}
+        >
+            <ThumbsUp
+                class="size-6"
+                class="group-[&.is-active]:fill-yellow-500 group-[&.is-active]:stroke-yellow-500"
+            />
+            <span class="min-w-4" data-like-count={slug}>
+                {likes}
+            </span>
+        </button> -->
+    </div>
+    <div class="mb-4 mt-4 flex flex-wrap gap-2">
+        {
+            blog.data.tags.map((tag) => (
+                <span class="rounded-full bg-stone-300 px-2 pb-1 pt-0.5 text-sm leading-none text-stone-900">
+                    {tag ?? ""}
+                </span>
+            ))
+        }
+    </div>
+    <p class="mt-6">{blog.body}</p>
+    <div class="mt-4 flex items-center justify-between gap-6">
+        <a
+            href={blog.data.url}
+            target="_blank"
+            class="bg-clr-foreground hover:bg-clr-foreground-hover flex h-9 w-fit items-center justify-center gap-2 rounded px-4 py-2 text-center font-bold leading-none transition-all"
+            >Visit blog <ArrowUpRightFromSquare class="size-4" /></a
+        >
+    </div>
+</section>

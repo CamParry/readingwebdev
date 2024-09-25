@@ -1,0 +1,36 @@
+---
+import { ViewTransitions } from "astro:transitions";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import Scripts from "./Scripts.astro";
+import BlogModal from "./BlogModal.astro";
+
+import "../styles/index.css";
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content="Astro description" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>{title}</title>
+        <ViewTransitions />
+    </head>
+    <body
+        class="bg-clr-background text-clr-text flex min-h-dvh grow flex-col px-16"
+    >
+        <Header />
+        <slot />
+        <Footer />
+        <BlogModal />
+        <Scripts />
+    </body>
+</html>

@@ -1,0 +1,59 @@
+---
+import { Moon, Sun } from "lucide-astro";
+import { getPath } from "../utils/getPath";
+
+const path = getPath(Astro.url);
+
+const menu = [
+    { title: "Explore", path: "/explore" },
+    { title: "Submit", path: "/submit" },
+];
+---
+
+<header
+    class="mx-auto flex w-full max-w-screen-xl items-center justify-between gap-8 py-12"
+>
+    <h1 class="text-2xl font-bold">
+        <a href="/">Reading_Web_Dev</a>
+    </h1>
+    <nav class="ml-auto flex items-center gap-8 text-lg">
+        {
+            menu.map((item) => (
+                <a
+                    href={item.path}
+                    class={`hover:bg-clr-foreground flex h-10 items-center justify-center rounded px-4 transition-all ${path === item.path ? "font-bold" : ""} `}
+                >
+                    {item.title}
+                </a>
+            ))
+        }
+    </nav>
+    <button
+        data-toggle-theme
+        title="Toggle Theme"
+        class="hover:bg-clr-foreground flex size-10 items-center justify-center rounded transition-all"
+    >
+        <Sun class="hidden dark:block" />
+        <Moon class="block dark:hidden" />
+    </button>
+</header>
+<script>
+    document.addEventListener("click", function (event) {
+        if (
+            event.target instanceof Element &&
+            event.target.closest("[data-toggle-theme]")
+        ) {
+            if (document.documentElement.classList.contains("dark")) {
+                document.documentElement.classList.remove("dark");
+                localStorage.removeItem("theme");
+            } else {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+            }
+        }
+    });
+
+    if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.classList.add("dark");
+    }
+</script>

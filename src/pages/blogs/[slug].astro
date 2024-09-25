@@ -1,0 +1,34 @@
+---
+import type { Params } from "astro";
+import { getEntry } from "astro:content";
+import { ArrowLeft } from "lucide-astro";
+import Blog from "../../components/Blog.astro";
+import Layout from "../../components/Layout.astro";
+
+const { slug } = Astro.params as Params;
+
+if (!slug) {
+    return new Response("Not Found", { status: 404 });
+}
+
+const blog = await getEntry("blogs", slug);
+
+if (!blog) {
+    return new Response("Not Found", { status: 404 });
+}
+---
+
+<Layout title={`${blog.data.title} | Reading Web Dev`}>
+    <main class="grow px-16 py-12">
+        <section class="mx-auto flex max-w-screen-xl justify-between gap-2">
+            <a
+                href="/explore"
+                class="flex w-fit items-center gap-2 rounded px-2 py-2 leading-none hover:bg-stone-200"
+            >
+                <ArrowLeft class="size-5" />
+                Back
+            </a>
+        </section>
+        <Blog blog={blog} />
+    </main>
+</Layout>

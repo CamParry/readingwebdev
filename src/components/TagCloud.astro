@@ -1,0 +1,32 @@
+---
+import { tags } from "../content/tags";
+import TagLink from "./TagLink.astro";
+import { cn } from "../utils/cn";
+
+interface Props {
+    center?: boolean;
+    class?: string;
+}
+
+const { center, class: className } = Astro.props;
+
+const activeTag = Astro.url.pathname.split("/").pop();
+---
+
+<div
+    class={cn(
+        "flex flex-wrap gap-2",
+        center ? "justify-center" : "",
+        className
+    )}
+>
+    {
+        Object.entries(tags).map(([slug, title]) => (
+            <TagLink
+                href={`/explore/${slug}`}
+                title={title}
+                isActive={slug === activeTag}
+            />
+        ))
+    }
+</div>
