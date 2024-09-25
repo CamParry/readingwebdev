@@ -9,12 +9,12 @@ const sort = getSearchParam(
 );
 ---
 
-<form data-sort-form class="flex items-center gap-2">
+<form data-sort-form class="flex items-center">
     <label for="sort" class="font-bold">Sort by</label>
     <select
         name="sort"
         id="sort"
-        class="bg-clr-background hover:bg-clr-foreground rounded border-none py-2 pl-2 leading-none transition-all"
+        class="bg-clr-background rounded border-none py-2 pl-2 pr-6 leading-none transition-all focus:ring-0 focus-visible:ring-2"
     >
         <option value="daily" selected={sort === "daily"}
             >random daily order</option
