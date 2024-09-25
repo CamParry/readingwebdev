@@ -2,7 +2,6 @@
 import { ViewTransitions } from "astro:transitions";
 import Header from "./Header.astro";
 import Footer from "./Footer.astro";
-import Scripts from "./Scripts.astro";
 import BlogModal from "./BlogModal.astro";
 
 import "../styles/index.css";
@@ -31,6 +30,5 @@ const { title } = Astro.props;
         <slot />
         <Footer />
         <BlogModal />
-        <Scripts />
     </body>
 </html>
