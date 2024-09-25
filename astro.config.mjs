@@ -13,8 +13,8 @@ export default defineConfig({
     ],
     output: "server",
     server: {
-        port: import.meta.env.PORT || 4000,
-        host: import.meta.env.HOST || "0.0.0.0",
+        port: process.env.PORT || 4321,
+        host: process.env.HOST || "0.0.0.0",
     },
     adapter: node({
         mode: "standalone",
