@@ -13,7 +13,7 @@ export default defineConfig({
     ],
     output: "server",
     server: {
-        port: process.env.PORT || 4321,
+        port: Number(process.env.PORT) || 4321,
         host: process.env.HOST || "0.0.0.0",
     },
     adapter: node({
