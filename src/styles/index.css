@@ -7,7 +7,7 @@
         --clr-background: theme(colors.stone.50);
         --clr-foreground: theme(colors.stone.200);
         --clr-foreground-hover: theme(colors.stone.300);
-        --clr-foreground-active: theme(colors.stone.700);
+        --clr-foreground-active: theme(colors.stone.800);
         --clr-text: theme(colors.stone.900);
         --clr-text-inverted: theme(colors.stone.50);
         --clr-border: theme(colors.stone.300);
@@ -17,7 +17,7 @@
         --clr-background: theme(colors.stone.800);
         --clr-foreground: theme(colors.stone.700);
         --clr-foreground-hover: theme(colors.stone.600);
-        --clr-foreground-active: theme(colors.stone.300);
+        --clr-foreground-active: theme(colors.stone.200);
         --clr-text: theme(colors.stone.50);
         --clr-text-inverted: theme(colors.stone.900);
         --clr-border: theme(colors.stone.600);
