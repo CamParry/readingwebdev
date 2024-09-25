@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { ArrowUpRightFromSquare } from "lucide-astro";
 import { calculateYearsSince } from "../utils/calculateYearsSince";
+import { tags } from "../content/tags";
 
 interface Props {
     blog: CollectionEntry<"blogs">;
@@ -73,7 +74,7 @@ const years = blog.data.firstPostDate
         {
             blog.data.tags.map((tag) => (
                 <span class="rounded-full bg-stone-300 px-2 pb-1 pt-0.5 text-sm leading-none text-stone-900">
-                    {tag ?? ""}
+                    {tags[tag as keyof typeof tags] ?? ""}
                 </span>
             ))
         }
