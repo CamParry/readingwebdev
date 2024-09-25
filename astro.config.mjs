@@ -13,7 +13,7 @@ export default defineConfig({
     ],
     output: "server",
     server: {
-        port: import.meta.env.PORT || 4321,
+        port: import.meta.env.PORT || 4000,
         host: import.meta.env.HOST || "0.0.0.0",
     },
     adapter: node({
