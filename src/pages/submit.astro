@@ -9,7 +9,7 @@ import { ArrowRight } from "lucide-astro";
             <h1 class="text-center text-2xl font-bold leading-none">
                 Submit a blog
             </h1>
-            <form date-submit-form class="mx-auto mt-12 max-w-lg">
+            <div class="mx-auto mt-12 max-w-lg">
                 <h2 class="text-lg font-bold">Submission criteria</h2>
                 <ul class="mt-2 list-disc pl-4">
                     <li>Primarily focused on web development</li>
@@ -19,12 +19,26 @@ import { ArrowRight } from "lucide-astro";
                     </li>
                     <li>Includes at least 10 posts</li>
                     <li>Updated within the last 10 years</li>
-                    <li>Author can be an individual or company</li>
-                    <li>Not primarily be for SEO or marketing purposes</li>
-                    <li>Is writting in English (for now)</li>
-                    <li>Not written by an LLM</li>
+                    <li>
+                        Author is an individual, not a company or organisation
+                    </li>
+                    <li>Not written by ChatGPT or other AI tools</li>
+                    <li>Writting in English (for now)</li>
                 </ul>
-                <div class="mt-6 space-y-4">
+                <h2 class="mt-8 text-lg font-bold">Steps</h2>
+                <ol class="mt-2 list-decimal pl-4">
+                    <li>
+                        Clone the repo: gh repo clone CamParry/readingwebdev
+                    </li>
+                    <li>
+                        Dulicate src/content/blog-template.md into the
+                        src/content/blogs directory with the filename as the
+                        author name in kebab case
+                    </li>
+                </ol>
+            </div>
+            <!-- <form date-submit-form class="mx-auto mt-12 max-w-lg"> -->
+            <!-- <div class="mt-6 space-y-4">
                     <label class="block">
                         <p class="font-bold">Title</p>
                         <input
@@ -136,7 +150,7 @@ import { ArrowRight } from "lucide-astro";
                     Submit
                     <ArrowRight class="size-5" />
                 </button>
-            </form>
+            </form> -->
         </section>
     </main>
 </Layout>
