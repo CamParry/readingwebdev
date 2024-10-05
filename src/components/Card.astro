@@ -2,76 +2,52 @@
 import type { CollectionEntry } from "astro:content";
 import { ArrowUpRightFromSquare } from "lucide-astro";
 import { tags } from "../content/tags";
+import { calculateYearsSince } from "../utils/calculateYearsSince";
+import { getBlog } from "../db";
 
 interface Props {
     blog: CollectionEntry<"blogs">;
 }
 
-const { blog } = Astro.props;
+const { blog: _blog } = Astro.props;
+
+const blog = getBlog(_blog);
 ---
 
 <div
-    class="border-clr-border bg-clr-foreground hover:bg-clr-foreground-hover flex min-h-44 flex-col rounded-lg p-3 transition-all"
+    class="flex min-h-44 flex-col rounded-lg border-clr-border bg-clr-foreground p-3 transition-all hover:bg-clr-foreground-hover"
 >
     <a
         href={`/blogs/${blog.slug}`}
         data-blog-modal-trigger={blog.slug}
+        data-blog-modal-data={JSON.stringify(blog)}
         class="mb-4 block text-left"
     >
         <div class="aspect-[1.91/1]">
             {
-                blog.data.image ? (
+                blog.image ? (
                     <img
-                        class={`h-full overflow-hidden rounded ${blog.data.imageRatio === "square" ? "aspect-square object-contain" : "w-full object-cover"}`}
-                        src={blog.data.image}
+                        class={`h-full overflow-hidden rounded ${blog.imageRatio === "square" ? "aspect-square object-contain" : "w-full object-cover"}`}
+                        src={blog.image}
                         alt=""
                     />
                 ) : (
-                    <div class="bg-clr-background flex size-full items-center justify-center rounded p-4 text-xl font-bold">
-                        {blog.data.title}
+                    <div class="flex size-full items-center justify-center rounded bg-clr-background p-4 text-xl font-bold">
+                        {blog.title}
                     </div>
                 )
             }
         </div>
         <h3 class="mt-4 text-lg font-bold leading-none">
-            {blog.data.author}
+            {blog.author}
         </h3>
         <p class="mt-2 text-sm">
-            {
-                blog.data.tags
-                    .map((t) => tags[t as keyof typeof tags] ?? "")
-                    .join(", ")
-            }
+            {blog.tags.join(", ")}
         </p>
     </a>
     <div class="mt-auto flex items-center justify-between">
-        <!-- {
-            session ? (
-                <button
-                    data-like={slug}
-                    title={likedByUser ? "Unlike" : "Like"}
-                    class={`group flex h-5 items-center gap-1 px-1 ${likedByUser ? "is-active" : ""}`}
-                >
-                    <ThumbsUp class="size-4 shrink-0 group-[&.is-active]:fill-yellow-500 group-[&.is-active]:stroke-yellow-500" />
-                    <span class="min-w-4 text-sm" data-like-count={slug}>
-                        {likes || ""}
-                    </span>
-                </button>
-            ) : (
-                <a
-                    href="/login"
-                    title="Login to like"
-                    class={`group flex h-5 items-center gap-1 px-1 ${likedByUser ? "is-active" : ""}`}
-                >
-                    <ThumbsUp class="size-4 shrink-0 group-[&.is-active]:fill-yellow-500 group-[&.is-active]:stroke-yellow-500" />
-                    <span class="min-w-4 text-sm" data-like-count={slug}>
-                        {likes || ""}
-                    </span>
-                </a>
-            )
-        } -->
         <a
-            href={blog.data.url}
+            href={blog.url}
             title="Open in new tab"
             target="_blank"
             class="flex size-4 items-center justify-center"

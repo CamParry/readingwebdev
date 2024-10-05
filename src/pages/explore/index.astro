@@ -1,15 +1,11 @@
 ---
-import type { Params } from "astro";
-import { ArrowLeft } from "lucide-astro";
 import Card from "../../components/Card.astro";
+import CardGrid from "../../components/CardGrid.astro";
 import Layout from "../../components/Layout.astro";
 import SortForm from "../../components/SortForm.astro";
-import { tags } from "../../content/tags";
+import TagCloud from "../../components/TagCloud.astro";
 import { getBlogs } from "../../db";
 import { getSearchParam } from "../../utils/getSearchParam";
-import TagCloud from "../../components/TagCloud.astro";
-import CardList from "../../components/CardGrid.astro";
-import CardGrid from "../../components/CardGrid.astro";
 
 const sort = getSearchParam(
     Astro.url,
@@ -18,32 +14,13 @@ const sort = getSearchParam(
     "daily"
 );
 
-const { tag } = Astro.params as Params;
-
-if (!tag || !(tag in tags)) {
-    return new Response(null, { status: 404 });
-}
-
-const blogs = await getBlogs({
-    sort,
-    tag,
-});
-
-const title = tags[tag as keyof typeof tags];
+const blogs = await getBlogs({ sort });
 ---
 
-<Layout title={`Explore | ${title} | Reading Web Dev`}>
+<Layout title="Explore | Reading Web Dev">
     <main class="mx-auto w-full max-w-screen-lg space-y-12 py-6">
-        <header class="flex h-10 items-center justify-between gap-2">
-            <a
-                href="/explore"
-                class="flex w-20 items-center gap-2 rounded px-2 py-2 leading-none hover:bg-stone-200"
-            >
-                <ArrowLeft class="size-5" />
-                Back
-            </a>
-            <h1 class="text-2xl font-bold leading-none">Explore | {title}</h1>
-            <div class="w-20"></div>
+        <header class="flex h-10 items-center justify-center">
+            <h1 class="text-center text-2xl font-bold leading-none">Explore</h1>
         </header>
         <div class="space-y-6">
             <TagCloud center class="mx-auto max-w-screen-md" />
@@ -58,7 +35,7 @@ const title = tags[tag as keyof typeof tags];
                 ) : (
                     <div class="">
                         <h2 class="mt-12 text-center text-2xl font-bold">
-                            No blogs found for this tag
+                            No blogs found
                         </h2>
                     </div>
                 )

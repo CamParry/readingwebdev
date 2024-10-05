@@ -7,6 +7,11 @@ const sort = getSearchParam(
     ["newest", "oldest", "daily"],
     "daily"
 );
+
+const options = [
+    { value: "daily", label: "random daily order" },
+    { value: "newest", label: "most recently added" },
+];
 ---
 
 <form data-sort-form class="flex items-center">
@@ -14,16 +19,16 @@ const sort = getSearchParam(
     <select
         name="sort"
         id="sort"
-        class="bg-clr-background rounded border-none py-2 pl-2 pr-6 leading-none transition-all focus:ring-0 focus-visible:ring-2"
+        class="rounded border-none bg-clr-background py-2 pl-2 pr-8 leading-none transition-all focus:ring-0 focus-visible:ring-2"
     >
-        <option value="daily" selected={sort === "daily"}
-            >random daily order</option
-        >
-        <option value="newest" selected={sort === "newest"}
-            >most recently added</option
-        >
+        {
+            options.map((option) => (
+                <option value={option.value} selected={sort === option.value}>
+                    {option.label}
+                </option>
+            ))
+        }
     </select>
-    <input type="submit" value="" />
 </form>
 <script>
     document.addEventListener("change", (event) => {
@@ -32,10 +37,7 @@ const sort = getSearchParam(
                 const form = event.target.closest(
                     "[data-sort-form]"
                 ) as HTMLFormElement;
-                const submit = form.querySelector(
-                    'input[type="submit"]'
-                ) as HTMLInputElement;
-                submit?.click();
+                form?.submit();
             }
         }
     });

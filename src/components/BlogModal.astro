@@ -1,5 +1,5 @@
 ---
-import { X } from "lucide-astro";
+import { ArrowUpRightFromSquare, X } from "lucide-astro";
 ---
 
 <div
@@ -12,56 +12,118 @@ import { X } from "lucide-astro";
     >
     </div>
     <div
-        class="bg-clr-background relative mx-auto w-full max-w-2xl rounded-lg rounded-tl-none p-6 shadow-xl"
+        class="relative mx-auto w-full max-w-2xl rounded-lg rounded-tl-none bg-clr-background p-6 shadow-xl"
     >
         <button
             data-blog-modal-close
-            class="bg-clr-background absolute -left-10 top-0 flex size-10 items-center justify-center rounded-l-lg"
+            class="absolute -left-10 top-0 flex size-10 items-center justify-center rounded-l-lg bg-clr-background"
         >
             <X class="size-6" />
         </button>
-        <div data-blog-modal-content></div>
+        <div data-blog-modal-content>
+            <div class="">
+                <a
+                    href=""
+                    target="_blank"
+                    class="inline-block h-full w-auto"
+                    data-blog-modal-link
+                >
+                    <img
+                        class="h-full w-auto overflow-hidden rounded border border-clr-border object-cover"
+                        src=""
+                        alt=""
+                        data-blog-modal-image
+                    />
+                </a>
+            </div>
+            <div class="mt-6 flex justify-between">
+                <div class="">
+                    <h2 class="text-xl font-bold leading-none">
+                        <a
+                            href=""
+                            data-blog-modal-link
+                            data-blog-modal-title
+                            target="_blank"
+                            class="mt-2 hover:underline"
+                        >
+                        </a>
+                    </h2>
+                    <ul data-blog-modal-list class="mt-4 list-inside list-disc">
+                    </ul>
+                </div>
+            </div>
+            <ul
+                data-blog-modal-tags
+                class="tags mb-4 mt-4 flex flex-wrap gap-2"
+            >
+            </ul>
+            <p data-blog-modal-description class="mt-6"></p>
+            <div class="mt-4 flex items-center justify-between gap-6">
+                <a
+                    href=""
+                    data-blog-modal-link
+                    target="_blank"
+                    class="flex h-9 w-fit items-center justify-center gap-2 rounded bg-clr-foreground px-4 py-2 text-center font-bold leading-none transition-all hover:bg-clr-foreground-hover"
+                    >Visit blog <ArrowUpRightFromSquare class="size-4" /></a
+                >
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
     function openModal(trigger: HTMLAnchorElement) {
         const href = trigger.href;
-        const slug = trigger.getAttribute("data-blog-modal-trigger")!;
+        const data = JSON.parse(trigger.getAttribute("data-blog-modal-data")!);
+        const modal = getModal();
 
-        const modal = document.querySelector(
-            "[data-blog-modal]"
-        ) as HTMLDivElement;
+        modal.links.forEach((link) => {
+            link.setAttribute("href", data.url);
+        });
+        modal.image.setAttribute("src", data.image);
+        modal.image.setAttribute("alt", data.title);
+        modal.title.textContent = data.title;
+        modal.description.textContent = data.description;
+        modal.tags.innerHTML = data?.tags
+            ?.map((t: string) => `<li>${t}</li>`)
+            ?.join("");
+        modal.list.innerHTML = data?.bullets
+            ?.map((b: string) => `<li>${b}</li>`)
+            ?.join("");
 
-        const modalContent = modal.querySelector(
-            "[data-blog-modal-content]"
-        ) as HTMLDivElement;
-
-        const template = document.querySelector(
-            `[data-blog-modal-template="${slug}"]`
-        ) as HTMLTemplateElement;
-
-        if (template) {
-            const content = template.content.cloneNode(true);
-            modalContent.appendChild(content);
-        }
-
-        modal.classList.add("is-active");
+        modal.root.classList.add("is-active");
         window.history.pushState({}, "", href);
     }
 
+    function getModal() {
+        const root = document.querySelector("[data-blog-modal]") as HTMLElement;
+        return {
+            root,
+            title: root.querySelector(
+                "[data-blog-modal-title]"
+            ) as HTMLAnchorElement,
+            description: root.querySelector(
+                "[data-blog-modal-description]"
+            ) as HTMLParagraphElement,
+            tags: root.querySelector(
+                "[data-blog-modal-tags]"
+            ) as HTMLUListElement,
+            image: root.querySelector(
+                "[data-blog-modal-image]"
+            ) as HTMLImageElement,
+            links: root.querySelectorAll(
+                "[data-blog-modal-link]"
+            ) as NodeListOf<HTMLAnchorElement>,
+            list: root.querySelector(
+                "[data-blog-modal-list]"
+            ) as HTMLUListElement,
+        };
+    }
+
     function closeModal() {
-        const modal = document.querySelector(
-            "[data-blog-modal]"
-        ) as HTMLDivElement;
-
-        const modalContent = modal.querySelector(
-            "[data-blog-modal-content]"
-        ) as HTMLDivElement;
-
-        if (modal.classList.contains("is-active")) {
-            modal.classList.remove("is-active");
-            modalContent.innerHTML = "";
+        const modal = getModal();
+        if (modal.root.classList.contains("is-active")) {
+            modal.root.classList.remove("is-active");
             window.history.back();
         }
     }
@@ -81,13 +143,11 @@ import { X } from "lucide-astro";
                 }
 
                 if (event.target.closest("[data-blog-modal-close]")) {
-                    closeModal();
-                    return;
+                    return closeModal();
                 }
 
                 if (event.target.closest("[data-blog-modal-overlay]")) {
-                    closeModal();
-                    return;
+                    return closeModal();
                 }
             }
         },

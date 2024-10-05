@@ -1,9 +1,9 @@
 ---
 import type { Params } from "astro";
 import { getEntry } from "astro:content";
-import { ArrowLeft } from "lucide-astro";
-import Blog from "../../components/Blog.astro";
+import { ArrowLeft, ArrowUpRightFromSquare } from "lucide-astro";
 import Layout from "../../components/Layout.astro";
+import { getBlog } from "../../db";
 
 const { slug } = Astro.params as Params;
 
@@ -11,14 +11,16 @@ if (!slug) {
     return new Response("Not Found", { status: 404 });
 }
 
-const blog = await getEntry("blogs", slug);
+const _blog = await getEntry("blogs", slug);
 
-if (!blog) {
+if (!_blog) {
     return new Response("Not Found", { status: 404 });
 }
+
+const blog = getBlog(_blog);
 ---
 
-<Layout title={`${blog.data.title} | Reading Web Dev`}>
+<Layout title={`${blog.title} | Reading Web Dev`}>
     <main class="grow px-16 py-12">
         <section class="mx-auto flex max-w-screen-xl justify-between gap-2">
             <a
@@ -29,6 +31,52 @@ if (!blog) {
                 Back
             </a>
         </section>
-        <Blog blog={blog} />
+        <section data-blog-content class="mx-auto w-full max-w-2xl">
+            {
+                blog.image && (
+                    <div class="">
+                        <a
+                            href={blog.url}
+                            target="_blank"
+                            class="inline-block h-full w-auto"
+                        >
+                            <img
+                                class="h-full w-auto overflow-hidden rounded border border-clr-border object-cover"
+                                src={blog.image}
+                                alt={blog.author}
+                            />
+                        </a>
+                    </div>
+                )
+            }
+            <div class="mt-6 flex justify-between">
+                <div class="">
+                    <h2 class="text-xl font-bold leading-none">
+                        <a
+                            href={blog.url}
+                            target="_blank"
+                            class="mt-2 hover:underline"
+                        >
+                            {blog.author}
+                        </a>
+                    </h2>
+                    <ul class="mt-4 list-inside list-disc">
+                        {blog.bullets?.map((bullet) => <li>{bullet}</li>)}
+                    </ul>
+                </div>
+            </div>
+            <ul class="tags mb-4 mt-4 flex flex-wrap gap-2">
+                {blog.tags.map((tag) => <li>{tag}</li>)}
+            </ul>
+            <p class="mt-6">{blog.description}</p>
+            <div class="mt-4 flex items-center justify-between gap-6">
+                <a
+                    href={blog.url}
+                    target="_blank"
+                    class="flex h-9 w-fit items-center justify-center gap-2 rounded bg-clr-foreground px-4 py-2 text-center font-bold leading-none transition-all hover:bg-clr-foreground-hover"
+                    >Visit blog <ArrowUpRightFromSquare class="size-4" /></a
+                >
+            </div>
+        </section>
     </main>
 </Layout>

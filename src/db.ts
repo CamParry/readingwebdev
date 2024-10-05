@@ -1,6 +1,9 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { shuffleWithSeed } from "./utils/shuffleWithSeed";
 import { startOfDay } from "./utils/startOfDay";
+import { title, url } from "valibot";
+import { tags } from "./content/tags";
+import { calculateYearsSince } from "./utils/calculateYearsSince";
 
 type Blog = CollectionEntry<"blogs">;
 
@@ -30,6 +33,37 @@ export const getBlogs = async ({
     }
 
     return blogs;
+};
+
+export const getBlog = (blog: CollectionEntry<"blogs">) => {
+    const years = blog.data.firstPostDate
+        ? calculateYearsSince(new Date(blog.data.firstPostDate))
+        : null;
+
+    const bullets = [];
+
+    if (years) {
+        bullets.push(
+            `First posted ${years} ${years > 1 ? "years" : "year"} ago`
+        );
+    }
+
+    if (blog.data.postCount) {
+        bullets.push(`${blog.data.postCount} posts`);
+    }
+
+    return {
+        slug: blog.slug,
+        title: blog.data.title,
+        author: blog.data.author,
+        url: blog.data.url,
+        image: blog.data.image,
+        imageRatio: blog.data.imageRatio,
+        description: blog.body,
+        date: blog.data.date,
+        tags: blog.data.tags?.map((tag) => tags[tag as keyof typeof tags]),
+        bullets,
+    };
 };
 
 export const sortBlogsByDaily = async (blogs: Blog[]) => {
