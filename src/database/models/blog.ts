@@ -1,10 +1,10 @@
-import { z } from "astro/zod";
 import { dailyRandom } from "@/utils/shuffleWithSeed";
-import { db } from "../client";
-import { blogsTable, tagsTable } from "../schema";
-import type { Tag } from "./tag";
-import { eq } from "drizzle-orm";
 import { toSlug } from "@/utils/toSlug";
+import { z } from "astro/zod";
+import { eq } from "drizzle-orm";
+import { db } from "../client";
+import { blogsTable } from "../schema";
+import type { Tag } from "./tag";
 
 export const imageRatioOptions = ["square", "wide"] as const;
 

@@ -1,6 +1,8 @@
 ---
-import type { Params } from "astro";
-import { ArrowLeft, ArrowUpRightFromSquare } from "lucide-astro";
+import { BackButton, Header, Layout, Panel, Title } from "@/components/admin";
+import Input from "@/components/Input.astro";
+import Select from "@/components/Select.astro";
+import Textarea from "@/components/Textarea.astro";
 import {
     type Blog,
     BlogSchema,
@@ -11,10 +13,8 @@ import {
 import { cn } from "@/utils/cn";
 import { toNiceDate } from "@/utils/toNiceDate";
 import { toTitleCase } from "@/utils/toTitleCase";
-import { Layout, Header, Panel, Title, BackButton } from "@/components/admin";
-import Input from "@/components/Input.astro";
-import Select from "@/components/Select.astro";
-import Textarea from "@/components/Textarea.astro";
+import type { Params } from "astro";
+import { ArrowUpRightFromSquare } from "lucide-astro";
 
 await Astro.locals.guards.adminOnly();
 

@@ -1,6 +1,6 @@
 import { z } from "astro/zod";
+import { count, eq } from "drizzle-orm";
 import { db } from "../client";
-import { count, eq, getTableColumns } from "drizzle-orm";
 import { blogTagsTable, tagsTable } from "../schema";
 
 export const TagSchema = z.object({
