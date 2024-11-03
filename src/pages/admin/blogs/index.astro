@@ -1,0 +1,83 @@
+---
+import { blogService, statusOptions } from "@/database/models/blog";
+import { getSearchParam } from "@/utils/getSearchParam";
+import { toTitleCase } from "@/utils/toTitleCase";
+import {
+    Layout,
+    Header,
+    Panel,
+    Title,
+    NoResults,
+    List,
+    ListHeader,
+    ListContent,
+    ListItem,
+} from "@/components/admin";
+
+await Astro.locals.guards.adminOnly();
+
+const status = getSearchParam(
+    Astro.url,
+    "status",
+    ["submitted", "published", "archived", "rejected"],
+    "published"
+)!;
+
+const blogs = await blogService.getMany({
+    status,
+});
+---
+
+<Layout title="Blogs | Admin | not undefined">
+    <Header>
+        <Title>Blogs</Title>
+        <form class="ml-auto">
+            <label for="status" class="font-bold">Status</label>
+            <select
+                name="status"
+                id="status"
+                class="rounded border-none bg-clr-background py-2 pl-2 pr-8 leading-none transition-all focus:ring-0 focus-visible:ring-2"
+            >
+                {
+                    statusOptions.map((option) => (
+                        <option value={option} selected={status === option}>
+                            {toTitleCase(option)}
+                        </option>
+                    ))
+                }
+            </select>
+        </form>
+    </Header>
+    <Panel>
+        {
+            blogs.length ? (
+                <List>
+                    <ListHeader>
+                        <div>Author</div>
+                        <div>URL</div>
+                    </ListHeader>
+                    <ListContent>
+                        {blogs.map((blog) => (
+                            <ListItem href={`/admin/blogs/${blog.id}`}>
+                                <div>{blog.author}</div>
+                                <div>{blog.url}</div>
+                            </ListItem>
+                        ))}
+                    </ListContent>
+                </List>
+            ) : (
+                <NoResults>No blogs found</NoResults>
+            )
+        }
+    </Panel>
+</Layout>
+<script>
+    document.addEventListener("change", (event) => {
+        if (event.target instanceof Element) {
+            if (event.target.closest("form")) {
+                const form = event.target.closest("form") as HTMLFormElement;
+                form?.submit();
+            }
+        }
+    });
+</script>

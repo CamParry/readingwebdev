@@ -1,0 +1,54 @@
+---
+import { cn } from "@/utils/cn";
+import BaseLayout from "../Layout.astro";
+import PageTitle from "../PageTitle.astro";
+import PageHeader from "../PageHeader.astro";
+import { isActivePath } from "@/utils/isActivePath";
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+    { label: "Dashboard", href: "/admin/dashboard" },
+    { label: "Users", href: "/admin/users" },
+    { label: "Blogs", href: "/admin/blogs" },
+    { label: "Tags", href: "/admin/tags" },
+];
+---
+
+<BaseLayout title={title}>
+    <PageHeader>
+        <PageTitle>Admin</PageTitle>
+    </PageHeader>
+    <section class="mx-auto max-w-screen-xl">
+        <div class="mt-12 flex gap-8">
+            <div class="w-44 shrink-0">
+                <div class="space-y-2 rounded-lg bg-clr-foreground p-2">
+                    {
+                        navItems.map(({ label, href }) => (
+                            <a
+                                class={cn(
+                                    "flex h-10 items-center rounded px-4 text-lg font-bold hover:bg-clr-background",
+                                    isActivePath(currentPath, href)
+                                        ? "bg-clr-background"
+                                        : ""
+                                )}
+                                href={href}
+                            >
+                                {label}
+                            </a>
+                        ))
+                    }
+                </div>
+            </div>
+            <div class="grow space-y-6">
+                <slot />
+            </div>
+        </div>
+    </section>
+</BaseLayout>

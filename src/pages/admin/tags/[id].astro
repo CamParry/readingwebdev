@@ -1,0 +1,168 @@
+---
+import type { Params } from "astro";
+import { cn } from "@/utils/cn";
+import { toNiceDate } from "@/utils/toNiceDate";
+import { Layout, Header, Panel, Title, BackButton } from "@/components/admin";
+import { TagSchema, tagService, type Tag } from "@/database/models/tag";
+import { NotFoundError } from "@/errors";
+
+await Astro.locals.guards.adminOnly();
+
+const fields: {
+    label: string;
+    name: keyof Tag;
+    type: "text" | "number" | "url" | "textarea" | "select" | "date";
+    width?: "full" | "half";
+    options?: { label: string; value: string }[];
+}[] = [
+    { label: "Name", name: "name", type: "text", width: "half" },
+    { label: "Slug", name: "slug", type: "text", width: "half" },
+];
+
+const info: {
+    label: string;
+    name: keyof Tag;
+    type: "text" | "number" | "url" | "textarea" | "select" | "date";
+}[] = [];
+
+let message = "";
+
+const { id } = Astro.params as Params;
+
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        const values = Object.fromEntries(data.entries());
+        const valid = TagSchema.parse(values);
+        await tagService.update(Number(id), valid);
+        message = "Updated successfully";
+    } catch (error) {
+        console.error(error);
+        message = "Failed to update";
+    }
+}
+
+const tag = await tagService.getOne({ id: Number(id) });
+
+if (!tag) {
+    throw new NotFoundError();
+}
+---
+
+<Layout title="Edit Tag | Admin | not undefined">
+    <form method="POST" action="" class="space-y-6">
+        <Header>
+            <BackButton href="/admin/tags" />
+            <Title>
+                {tag.name}
+            </Title>
+            <div class="ml-auto"></div>
+            {message && <div class="">{message}</div>}
+            <button
+                type="submit"
+                class="flex h-8 items-center justify-center rounded bg-clr-foreground px-3 hover:bg-clr-foreground-hover"
+            >
+                Update
+            </button>
+        </Header>
+        <div class="flex items-start gap-6">
+            <Panel class="flex-[2] space-y-6">
+                <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                    {
+                        fields.map((field) => (
+                            <div
+                                class={cn(
+                                    "space-y-1",
+                                    field.width === "half"
+                                        ? "col-span-1"
+                                        : "col-span-2"
+                                )}
+                            >
+                                <label for={field.name} class="leading-none">
+                                    {field.label}
+                                </label>
+                                {field.type === "text" && (
+                                    <input
+                                        type="text"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={String(tag[field.name])}
+                                        class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                    />
+                                )}
+                                {field.type === "number" && (
+                                    <input
+                                        type="number"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={String(tag[field.name])}
+                                        class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                    />
+                                )}
+                                {field.type === "url" && (
+                                    <input
+                                        type="url"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={String(tag[field.name])}
+                                        class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                    />
+                                )}
+                                {field.type === "textarea" && (
+                                    <textarea
+                                        id={field.name}
+                                        name={field.name}
+                                        rows={4}
+                                        class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                    >
+                                        {tag[field.name]}
+                                    </textarea>
+                                )}
+                                {field.type === "select" && (
+                                    <select
+                                        id={field.name}
+                                        name={field.name}
+                                        value={String(tag[field.name])}
+                                        class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                    >
+                                        {field.options?.map((option) => (
+                                            <option
+                                                value={option.value}
+                                                selected={
+                                                    tag[field.name] ===
+                                                    option.value
+                                                }
+                                            >
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            </Panel>
+            <Panel class="flex-1 space-y-6">
+                <div class="space-y-2">
+                    {
+                        info.map((field) => (
+                            <div class="grid grid-cols-2 gap-4 leading-snug">
+                                <div class="">{field.label}</div>
+                                <div class="">
+                                    {tag[field.name]
+                                        ? field.type === "date"
+                                            ? toNiceDate(
+                                                  tag[field.name] as string
+                                              )
+                                            : tag[field.name]
+                                        : ""}
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </Panel>
+        </div>
+    </form>
+</Layout>

@@ -1,0 +1,7 @@
+---
+import { Layout } from "@/components/admin";
+
+await Astro.locals.guards.adminOnly();
+---
+
+<Layout title="Admin | not undefined" />

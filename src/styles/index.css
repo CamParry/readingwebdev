@@ -5,6 +5,7 @@
 @layer base {
     :root {
         --clr-background: theme(colors.stone.50);
+        --clr-background-inverted: theme(colors.stone.800);
         --clr-foreground: theme(colors.stone.200);
         --clr-foreground-hover: theme(colors.stone.300);
         --clr-foreground-active: theme(colors.stone.800);
@@ -17,6 +18,7 @@
 
     :root.dark {
         --clr-background: theme(colors.stone.800);
+        --clr-background-inverted: theme(colors.stone.100);
         --clr-foreground: theme(colors.stone.700);
         --clr-foreground-hover: theme(colors.stone.600);
         --clr-foreground-active: theme(colors.stone.200);
@@ -35,5 +37,14 @@
 
     .tags * {
         @apply rounded-full bg-stone-300 px-2 pb-1 pt-0.5 text-sm leading-none text-stone-900;
+    }
+
+    .submission-table {
+        @apply w-full table-fixed border-collapse;
+    }
+
+    .submission-table td,
+    .submission-table th {
+        @apply border border-clr-border bg-clr-background text-left align-top;
     }
 }

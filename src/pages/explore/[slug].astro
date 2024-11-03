@@ -1,0 +1,71 @@
+---
+import type { Params } from "astro";
+import { ArrowLeft } from "lucide-astro";
+import Card from "@/components/Card.astro";
+import CardGrid from "@/components/CardGrid.astro";
+import Layout from "@/components/Layout.astro";
+import SortForm from "@/components/SortForm.astro";
+import TagCloud from "@/components/TagCloud.astro";
+import { blogService } from "@/database/models/blog";
+import { getSearchParam } from "@/utils/getSearchParam";
+import { tagService } from "@/database/models/tag";
+import { NotFoundError } from "@/errors";
+import PageHeader from "@/components/PageHeader.astro";
+import PageTitle from "@/components/PageTitle.astro";
+
+const sort = getSearchParam(
+    Astro.url,
+    "sort",
+    ["newest", "oldest", "daily"],
+    "daily"
+)!;
+
+const { slug } = Astro.params as Params;
+
+if (!slug) {
+    throw new NotFoundError();
+}
+
+const tag = await tagService.getOne({ slug });
+
+if (!tag) {
+    throw new NotFoundError();
+}
+
+const blogs = await blogService.getMany({ tag: tag.slug, sort });
+---
+
+<Layout title={`Explore | ${tag.name} | not undefined`}>
+    <PageHeader>
+        <a
+            href="/explore"
+            class="mr-auto flex w-20 items-center gap-2 rounded px-2 py-1 leading-none hover:underline"
+        >
+            <ArrowLeft class="size-5" />
+            Back
+        </a>
+        <PageTitle>
+            Explore | {tag.name}
+        </PageTitle>
+        <div class="ml-auto w-20"></div>
+    </PageHeader>
+    <section class="mt-12 space-y-6">
+        <TagCloud center class="mx-auto max-w-screen-md" />
+        <SortForm />
+        {
+            blogs.length ? (
+                <CardGrid>
+                    {blogs.map((blog) => (
+                        <Card blog={blog} />
+                    ))}
+                </CardGrid>
+            ) : (
+                <div class="">
+                    <h2 class="mt-12 text-center text-2xl font-bold">
+                        No blogs found for this tag
+                    </h2>
+                </div>
+            )
+        }
+    </section>
+</Layout>

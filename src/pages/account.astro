@@ -1,0 +1,28 @@
+---
+import { LogOut } from "lucide-astro";
+import Layout from "@/components/Layout.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import PageTitle from "@/components/PageTitle.astro";
+
+await Astro.locals.guards.loggedInOnly();
+---
+
+<Layout title="Account | not undefined">
+    <PageHeader>
+        <PageTitle>Account</PageTitle>
+    </PageHeader>
+    <section class="mt-12 flex justify-center">
+        <div
+            class="flex w-64 flex-col items-center rounded-lg bg-clr-foreground p-6"
+        >
+            <h2 class="text-xl font-bold">Actions</h2>
+            <button
+                data-logout
+                class="mt-6 flex w-fit items-center justify-center gap-2 rounded bg-stone-800 px-4 py-3 text-center font-bold leading-none text-stone-50 hover:bg-stone-700"
+            >
+                <LogOut class="size-5" />
+                Logout
+            </button>
+        </div>
+    </section>
+</Layout>

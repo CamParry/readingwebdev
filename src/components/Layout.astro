@@ -3,8 +3,9 @@ import { ViewTransitions } from "astro:transitions";
 import Header from "./Header.astro";
 import Footer from "./Footer.astro";
 import BlogModal from "./BlogModal.astro";
+import Scripts from "./Scripts.astro";
 
-import "../styles/index.css";
+import "@/styles/index.css";
 
 interface Props {
     title: string;
@@ -22,13 +23,28 @@ const { title } = Astro.props;
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <title>{title}</title>
         <ViewTransitions />
+        <script is:inline>
+            // Set theme on view transition
+            document.addEventListener("astro:after-swap", function () {
+                if (localStorage.getItem("theme") === "dark") {
+                    document.documentElement.classList.add("dark");
+                }
+            });
+            // Set theme on page load
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        </script>
     </head>
     <body
-        class="bg-clr-background text-clr-text flex min-h-dvh grow flex-col px-16"
+        class="flex min-h-dvh grow flex-col bg-clr-background px-6 text-clr-text md:px-16"
     >
         <Header />
-        <slot />
+        <main class="mx-auto w-full max-w-screen-lg pb-12">
+            <slot />
+        </main>
         <Footer />
         <BlogModal />
+        <Scripts />
     </body>
 </html>

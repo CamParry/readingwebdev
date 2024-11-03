@@ -1,0 +1,209 @@
+---
+import type { Params } from "astro";
+import { ArrowLeft, ArrowUpRightFromSquare } from "lucide-astro";
+import {
+    type Blog,
+    BlogSchema,
+    blogService,
+    postCountOptions,
+    statusOptions,
+} from "@/database/models/blog";
+import { cn } from "@/utils/cn";
+import { toNiceDate } from "@/utils/toNiceDate";
+import { toTitleCase } from "@/utils/toTitleCase";
+import { Layout, Header, Panel, Title, BackButton } from "@/components/admin";
+import Input from "@/components/Input.astro";
+import Select from "@/components/Select.astro";
+import Textarea from "@/components/Textarea.astro";
+
+await Astro.locals.guards.adminOnly();
+
+const fields: {
+    label: string;
+    name: keyof Blog;
+    type: "text" | "number" | "url" | "textarea" | "select" | "date";
+    width?: "full" | "half";
+    options?: { label: string; value: string }[];
+    readonly?: boolean;
+}[] = [
+    {
+        label: "Status",
+        name: "status",
+        type: "select",
+        options: statusOptions.map((option) => ({
+            value: option,
+            label: toTitleCase(option),
+        })),
+    },
+    { label: "Slug", name: "slug", type: "text" },
+    { label: "Author", name: "author", type: "text" },
+    { label: "Title", name: "title", type: "text" },
+    { label: "URL", name: "url", type: "url" },
+    { label: "Image URL", name: "image", type: "url" },
+    { label: "Description", name: "description", type: "textarea" },
+    {
+        label: "Post Count",
+        name: "postCount",
+        type: "select",
+        width: "half",
+        options: postCountOptions.map((option) => ({
+            value: option,
+            label: option,
+        })),
+    },
+    { label: "Start Year", name: "startYear", type: "text", width: "half" },
+    {
+        label: "Submitted by",
+        name: "submittedBy",
+        type: "text",
+        readonly: true,
+    },
+];
+
+const info: {
+    label: string;
+    name: keyof Blog;
+    type: "text" | "number" | "url" | "textarea" | "select" | "date";
+}[] = [
+    { label: "Submitted", name: "submittedAt", type: "date" },
+    { label: "Published", name: "publishedAt", type: "date" },
+    { label: "Archived", name: "archivedAt", type: "date" },
+    { label: "Rejected", name: "rejectedAt", type: "date" },
+];
+
+let message = "";
+
+const { id } = Astro.params as Params;
+
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        const values = Object.fromEntries(data.entries());
+        const valid = BlogSchema.parse(values);
+        await blogService.update(Number(id), valid);
+        message = "Updated successfully";
+    } catch (error) {
+        console.error(error);
+        message = "Failed to update";
+    }
+}
+
+const blog = await blogService.getOne({ id: Number(id) });
+
+if (!blog) {
+    return new Response("Not Found", { status: 404 });
+}
+---
+
+<Layout title="Edit Blog | Admin | not undefined">
+    <form method="POST" action="" class="space-y-6">
+        <Header>
+            <BackButton href="/admin/blogs" />
+            <Title>
+                {blog.author}
+            </Title>
+            <div class="ml-auto"></div>
+            {message && <div class="">{message}</div>}
+            <button
+                type="submit"
+                class="flex h-8 items-center justify-center rounded bg-clr-foreground px-3 hover:bg-clr-foreground-hover"
+            >
+                Update
+            </button>
+            <a
+                href={blog.url}
+                target="_blank"
+                class="flex size-8 items-center justify-center rounded bg-clr-foreground hover:bg-clr-foreground-hover"
+            >
+                <ArrowUpRightFromSquare class="size-4" />
+            </a>
+        </Header>
+        <div class="flex items-start gap-6">
+            <Panel class="flex-[2] space-y-6">
+                <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                    {
+                        fields.map((field) => (
+                            <div
+                                class={cn(
+                                    "space-y-1",
+                                    field.width === "half"
+                                        ? "col-span-1"
+                                        : "col-span-2"
+                                )}
+                            >
+                                {field.type === "text" && (
+                                    <Input
+                                        type="text"
+                                        name={field.name}
+                                        label={field.label}
+                                        value={String(blog[field.name])}
+                                        readonly={field.readonly}
+                                    />
+                                )}
+                                {field.type === "number" && (
+                                    <Input
+                                        type="number"
+                                        name={field.name}
+                                        label={field.label}
+                                        value={String(blog[field.name])}
+                                        readonly={field.readonly}
+                                    />
+                                )}
+                                {field.type === "url" && (
+                                    <Input
+                                        type="url"
+                                        name={field.name}
+                                        label={field.label}
+                                        value={String(blog[field.name])}
+                                        readonly={field.readonly}
+                                    />
+                                )}
+                                {field.type === "textarea" && (
+                                    <Textarea
+                                        name={field.name}
+                                        label={field.label}
+                                        value={String(blog[field.name])}
+                                        readonly={field.readonly}
+                                    />
+                                )}
+                                {field.type === "select" && (
+                                    <Select
+                                        name={field.name}
+                                        label={field.label}
+                                        value={String(blog[field.name])}
+                                        options={field.options}
+                                    />
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            </Panel>
+            <Panel class="flex-1 space-y-6">
+                <img
+                    class="w-full overflow-hidden border border-clr-border bg-clr-background"
+                    src={blog.image}
+                    alt={blog.author}
+                />
+                <div class="space-y-2">
+                    {
+                        info.map((field) => (
+                            <div class="grid grid-cols-2 gap-4 leading-snug">
+                                <div class="">{field.label}</div>
+                                <div class="">
+                                    {blog[field.name]
+                                        ? field.type === "date"
+                                            ? toNiceDate(
+                                                  blog[field.name] as string
+                                              )
+                                            : blog[field.name]
+                                        : ""}
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </Panel>
+        </div>
+    </form>
+</Layout>

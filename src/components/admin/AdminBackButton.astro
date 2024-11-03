@@ -1,0 +1,16 @@
+---
+import { ArrowLeft } from "lucide-astro";
+
+interface Props {
+    href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<a
+    href={href}
+    class="flex size-8 items-center justify-center rounded bg-clr-foreground hover:bg-clr-foreground-hover"
+>
+    <ArrowLeft class="size-5" />
+</a>

@@ -1,0 +1,24 @@
+---
+import Layout from "@/components/Layout.astro";
+import PageTitle from "@/components/PageTitle.astro";
+import { Github } from "lucide-astro";
+
+if (Astro.locals.user) {
+    return Astro.redirect("/");
+}
+---
+
+<Layout title="Login | not undefined">
+    <section class="my-24 flex justify-center">
+        <div class="rounded-lg bg-clr-foreground p-6">
+            <PageTitle>Login</PageTitle>
+            <button
+                data-login
+                class="mt-6 flex w-fit items-center justify-center gap-2 rounded bg-stone-800 px-4 py-3 text-center font-bold leading-none text-stone-50 hover:bg-stone-700"
+            >
+                <Github class="size-5" />
+                Login with GitHub
+            </button>
+        </div>
+    </section>
+</Layout>

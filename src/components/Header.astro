@@ -1,6 +1,6 @@
 ---
-import { Moon, Sun } from "lucide-astro";
-import { getPath } from "../utils/getPath";
+import { getPath } from "@/utils/getPath";
+import { LogIn, Menu, Moon, Settings, Sun, User, X } from "lucide-astro";
 
 const path = getPath(Astro.url);
 
@@ -8,50 +8,109 @@ const menu = [
     { title: "Explore", path: "/explore" },
     { title: "Submit", path: "/submit" },
 ];
+
+const user = Astro.locals.user;
 ---
 
 <header
-    class="mx-auto flex w-full max-w-screen-xl items-center justify-between gap-8 py-12"
+    class="relative mx-auto flex w-full max-w-screen-xl items-center gap-2 py-6 md:gap-8 md:py-12"
 >
-    <a class="text-2xl font-bold" href="/">ReadingWeb.Dev</a>
-    <nav class="ml-auto flex items-center gap-8 text-lg">
+    <a class="text-xl font-bold md:text-2xl" href="/">not undefined</a>
+    <nav class="ml-auto flex items-center gap-2 text-lg md:gap-8">
         {
             menu.map((item) => (
                 <a
                     href={item.path}
-                    class={`flex h-10 items-center justify-center rounded px-4 transition-all hover:bg-clr-foreground ${path === item.path ? "font-bold" : ""} `}
+                    class={`hidden h-10 items-center justify-center rounded px-4 transition-all hover:bg-clr-foreground md:flex ${path === item.path ? "font-bold" : ""} `}
                 >
                     {item.title}
                 </a>
             ))
         }
-    </nav>
-    <button
-        data-toggle-theme
-        title="Toggle Theme"
-        class="flex size-10 items-center justify-center rounded transition-all hover:bg-clr-foreground"
-    >
-        <Sun class="hidden dark:block" />
-        <Moon class="block dark:hidden" />
-    </button>
-</header>
-<script>
-    document.addEventListener("click", function (event) {
-        if (
-            event.target instanceof Element &&
-            event.target.closest("[data-toggle-theme]")
-        ) {
-            if (document.documentElement.classList.contains("dark")) {
-                document.documentElement.classList.remove("dark");
-                localStorage.removeItem("theme");
-            } else {
-                document.documentElement.classList.add("dark");
-                localStorage.setItem("theme", "dark");
-            }
+        <button
+            data-theme-toggle
+            title="Toggle Theme"
+            class="ml-auto flex size-10 items-center justify-center rounded transition-all hover:bg-clr-foreground"
+        >
+            <Sun class="hidden dark:block" />
+            <Moon class="block dark:hidden" />
+        </button>
+        {
+            user ? (
+                <>
+                    <a
+                        href="/account"
+                        title="Account"
+                        class="hidden size-10 items-center justify-center rounded transition-all hover:bg-clr-foreground md:flex"
+                    >
+                        <User />
+                    </a>
+                    {user.role === "admin" && (
+                        <a
+                            href="/admin"
+                            title="Admin"
+                            class="hidden size-10 items-center justify-center rounded transition-all hover:bg-clr-foreground md:flex"
+                        >
+                            <Settings />
+                        </a>
+                    )}
+                </>
+            ) : (
+                <a
+                    href="/login"
+                    title="Login"
+                    class="hidden size-10 items-center justify-center rounded transition-all hover:bg-clr-foreground md:flex"
+                >
+                    <LogIn />
+                </a>
+            )
         }
-    });
-
-    if (localStorage.getItem("theme") === "dark") {
-        document.documentElement.classList.add("dark");
-    }
-</script>
+        <div class="group relative md:hidden" data-menu>
+            <button
+                data-menu-toggle
+                title="Menu"
+                class="flex size-10 items-center justify-center rounded group-[&.is-active]:rounded-b-none group-[&.is-active]:bg-clr-foreground"
+            >
+                <Menu class="block group-[&.is-active]:hidden" />
+                <X class="hidden group-[&.is-active]:block" />
+            </button>
+            <div
+                class="absolute right-0 top-12 hidden w-fit rounded-lg rounded-tr-none bg-clr-foreground px-2 py-2 group-[&.is-active]:block"
+            >
+                <div
+                    class="absolute -top-3 right-10 size-3 [background:radial-gradient(circle_at_top_left,transparent_70%,var(--clr-foreground)_71%)]"
+                >
+                </div>
+                <div class="absolute -top-2 right-0 h-2 w-10 bg-clr-foreground">
+                </div>
+                {
+                    menu.map((item) => (
+                        <a
+                            href={item.path}
+                            class={`block w-full px-3 py-2 text-right text-lg ${path === item.path ? "font-bold" : ""} `}
+                        >
+                            {item.title}
+                        </a>
+                    ))
+                }
+                {
+                    user ? (
+                        <a
+                            href="/account"
+                            class={`block w-full px-3 py-2 text-right text-lg ${path === "/account" ? "font-bold" : ""} `}
+                        >
+                            Account
+                        </a>
+                    ) : (
+                        <a
+                            href="/login"
+                            class="block w-full px-3 py-2 text-right text-lg"
+                        >
+                            Login
+                        </a>
+                    )
+                }
+            </div>
+        </div>
+    </nav>
+</header>

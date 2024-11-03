@@ -1,0 +1,184 @@
+---
+import { Layout, Header, Panel, Title, BackButton } from "@/components/admin";
+import { type User, UserRoleSchema, userService } from "@/database/models/user";
+import { userRoles } from "@/database/schema";
+import { cn } from "@/utils/cn";
+import { toNiceDate } from "@/utils/toNiceDate";
+import { toTitleCase } from "@/utils/toTitleCase";
+import type { Params } from "astro";
+
+await Astro.locals.guards.adminOnly();
+
+const fields: {
+    label: string;
+    name: keyof User;
+    type: "text" | "number" | "url" | "textarea" | "select" | "date";
+    width?: "full" | "half";
+    options?: { label: string; value: string }[];
+    readonly?: boolean;
+}[] = [
+    {
+        label: "Role",
+        name: "role",
+        type: "select",
+        options: userRoles.map((option) => ({
+            value: option,
+            label: toTitleCase(option),
+        })),
+    },
+    { label: "Name", name: "name", type: "text", readonly: true },
+    { label: "Email", name: "email", type: "text", readonly: true },
+];
+
+const info: {
+    label: string;
+    name: keyof User;
+    type: "text" | "number" | "url" | "textarea" | "select" | "date";
+}[] = [{ label: "Signed Up", name: "createdAt", type: "date" }];
+
+let message = "";
+
+const { id } = Astro.params as Params;
+
+if (!id) {
+    return new Response("Not Found", { status: 404 });
+}
+
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        const role = UserRoleSchema.parse(data.get("role"));
+        await userService.updateRole(id, role);
+        message = "Updated successfully";
+    } catch (error) {
+        console.error(error);
+        message = "Failed to update";
+    }
+}
+
+const user = await userService.getOne(id);
+
+if (!user) {
+    return new Response("Not Found", { status: 404 });
+}
+---
+
+<Layout title="Edit User | Admin | not undefined">
+    <form method="POST" action="" class="space-y-6">
+        <Header>
+            <BackButton href="/admin/users" />
+            <Title>
+                {user.name}
+            </Title>
+            <div class="ml-auto"></div>
+            {message && <div class="">{message}</div>}
+            <button
+                type="submit"
+                class="flex h-8 items-center justify-center rounded bg-clr-foreground px-3 hover:bg-clr-foreground-hover"
+            >
+                Update
+            </button>
+        </Header>
+        <div class="flex items-start gap-6">
+            <Panel class="grid flex-[2] grid-cols-2 gap-x-6 gap-y-4">
+                {
+                    fields.map((field) => (
+                        <div
+                            class={cn(
+                                "space-y-1",
+                                field.width === "half"
+                                    ? "col-span-1"
+                                    : "col-span-2"
+                            )}
+                        >
+                            <label for={field.name} class="leading-none">
+                                {field.label}
+                            </label>
+                            {field.readonly ? (
+                                <div class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2">
+                                    {user[field.name]}
+                                </div>
+                            ) : (
+                                <>
+                                    {field.type === "text" && (
+                                        <input
+                                            type="text"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={String(user[field.name])}
+                                            class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                        />
+                                    )}
+                                    {field.type === "number" && (
+                                        <input
+                                            type="number"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={String(user[field.name])}
+                                            class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                        />
+                                    )}
+                                    {field.type === "url" && (
+                                        <input
+                                            type="url"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={String(user[field.name])}
+                                            class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                        />
+                                    )}
+                                    {field.type === "textarea" && (
+                                        <textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            rows={4}
+                                            class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                        >
+                                            {String(user[field.name])}
+                                        </textarea>
+                                    )}
+                                    {field.type === "select" && (
+                                        <select
+                                            id={field.name}
+                                            name={field.name}
+                                            value={String(user[field.name])}
+                                            class="w-full rounded border-none bg-clr-background px-3 py-2 leading-snug focus:ring-0 focus-visible:ring-2"
+                                        >
+                                            {field.options?.map((option) => (
+                                                <option
+                                                    value={option.value}
+                                                    selected={
+                                                        user[field.name] ===
+                                                        option.value
+                                                    }
+                                                >
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    ))
+                }
+            </Panel>
+            <Panel class="flex-1 space-y-2">
+                {
+                    info.map((field) => (
+                        <div class="grid grid-cols-2 gap-4 leading-snug">
+                            <div class="">{field.label}:</div>
+                            <div class="">
+                                {user[field.name]
+                                    ? field.type === "date"
+                                        ? toNiceDate(user[field.name] as string)
+                                        : user[field.name]
+                                    : ""}
+                            </div>
+                        </div>
+                    ))
+                }
+            </Panel>
+        </div>
+    </form>
+</Layout>

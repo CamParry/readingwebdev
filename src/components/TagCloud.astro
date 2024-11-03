@@ -1,7 +1,7 @@
 ---
-import { tags } from "../content/tags";
 import TagLink from "./TagLink.astro";
-import { cn } from "../utils/cn";
+import { cn } from "@/utils/cn";
+import { tagService } from "@/database/models/tag";
 
 interface Props {
     center?: boolean;
@@ -9,6 +9,8 @@ interface Props {
 }
 
 const { center, class: className } = Astro.props;
+
+const tags = await tagService.getMany();
 
 const activeTag = Astro.url.pathname.split("/").pop();
 ---
@@ -21,11 +23,11 @@ const activeTag = Astro.url.pathname.split("/").pop();
     )}
 >
     {
-        Object.entries(tags).map(([slug, title]) => (
+        tags.map((tag) => (
             <TagLink
-                href={`/explore/${slug}`}
-                title={title}
-                isActive={slug === activeTag}
+                href={`/explore/${tag.slug}`}
+                title={tag.name}
+                isActive={tag.slug === activeTag}
             />
         ))
     }

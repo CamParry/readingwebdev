@@ -1,0 +1,46 @@
+---
+import { tagService } from "@/database/models/tag";
+import {
+    Layout,
+    Header,
+    Panel,
+    Title,
+    List,
+    ListHeader,
+    ListContent,
+    ListItem,
+    NoResults,
+} from "@/components/admin";
+
+await Astro.locals.guards.adminOnly();
+
+const tags = await tagService.getManyWithPostCount();
+---
+
+<Layout title="Tags | Admin | not undefined">
+    <Header>
+        <Title>Tags</Title>
+    </Header>
+    <Panel>
+        {
+            tags.length ? (
+                <List>
+                    <ListHeader>
+                        <div>Author</div>
+                        <div>Post Count</div>
+                    </ListHeader>
+                    <ListContent>
+                        {tags.map((tag) => (
+                            <ListItem href={`/admin/tags/${tag.id}`}>
+                                <div class="font-bold">{tag.name}</div>
+                                <div>{tag.postCount}</div>
+                            </ListItem>
+                        ))}
+                    </ListContent>
+                </List>
+            ) : (
+                <NoResults>No blogs found</NoResults>
+            )
+        }
+    </Panel>
+</Layout>

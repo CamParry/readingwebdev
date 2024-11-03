@@ -6,6 +6,7 @@ export default {
         extend: {
             colors: {
                 "clr-background": "var(--clr-background)",
+                "clr-background-inverted": "var(--clr-background-inverted)",
                 "clr-foreground": "var(--clr-foreground)",
                 "clr-foreground-hover": "var(--clr-foreground-hover)",
                 "clr-foreground-active": "var(--clr-foreground-active)",
@@ -17,8 +18,5 @@ export default {
             },
         },
     },
-    plugins: [
-        require("@tailwindcss/typography"),
-        require("@tailwindcss/forms"),
-    ],
+    plugins: [require("@tailwindcss/typography")],
 };

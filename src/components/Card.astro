@@ -1,17 +1,12 @@
 ---
-import type { CollectionEntry } from "astro:content";
+import type { Blog } from "@/database/models/blog";
 import { ArrowUpRightFromSquare } from "lucide-astro";
-import { tags } from "../content/tags";
-import { calculateYearsSince } from "../utils/calculateYearsSince";
-import { getBlog } from "../db";
 
 interface Props {
-    blog: CollectionEntry<"blogs">;
+    blog: Blog;
 }
 
-const { blog: _blog } = Astro.props;
-
-const blog = getBlog(_blog);
+const { blog } = Astro.props;
 ---
 
 <div
@@ -20,20 +15,31 @@ const blog = getBlog(_blog);
     <a
         href={`/blogs/${blog.slug}`}
         data-blog-modal-trigger={blog.slug}
-        data-blog-modal-data={JSON.stringify(blog)}
+        data-blog-modal-data={JSON.stringify({
+            id: blog.id,
+            slug: blog.slug ?? "",
+            url: blog.url ?? "",
+            author: blog.author ?? "",
+            description: blog.description ?? "",
+            image: blog.image ?? "",
+            imageRatio: blog.imageRatio ?? "",
+            postCount: blog.postCount ?? 0,
+            startYear: blog.startYear ?? "",
+            tags: blog.tags?.map((t) => t.name),
+        })}
         class="mb-4 block text-left"
     >
-        <div class="aspect-[1.91/1]">
+        <div class="aspect-[4/3]">
             {
                 blog.image ? (
                     <img
-                        class={`h-full overflow-hidden rounded ${blog.imageRatio === "square" ? "aspect-square object-contain" : "w-full object-cover"}`}
+                        class={`size-full rounded object-cover`}
                         src={blog.image}
                         alt=""
                     />
                 ) : (
                     <div class="flex size-full items-center justify-center rounded bg-clr-background p-4 text-xl font-bold">
-                        {blog.title}
+                        {blog.author}
                     </div>
                 )
             }
@@ -42,7 +48,7 @@ const blog = getBlog(_blog);
             {blog.author}
         </h3>
         <p class="mt-2 text-sm">
-            {blog.tags.join(", ")}
+            {blog.tags?.map((t) => t.name).join(", ")}
         </p>
     </a>
     <div class="mt-auto flex items-center justify-between">

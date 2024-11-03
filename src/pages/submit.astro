@@ -1,156 +1,207 @@
 ---
-import Layout from "../components/Layout.astro";
-import { ArrowRight } from "lucide-astro";
+import Input from "@/components/Input.astro";
+import Layout from "@/components/Layout.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import PageTitle from "@/components/PageTitle.astro";
+import Select from "@/components/Select.astro";
+import Textarea from "@/components/Textarea.astro";
+import { postCountOptions } from "@/database/models/blog";
+import { submitterRelationOptions } from "@/database/models/blog";
+import { blogService, PublicBlogSchema } from "@/database/models/blog";
+import { createForm } from "@/utils/createForm";
+import { ArrowLeft, ArrowRight, Github } from "lucide-astro";
+
+const user = Astro.locals.user;
+
+const form = await createForm({
+    request: Astro.request,
+    schema: PublicBlogSchema,
+    onSubmit: async (data) => {
+        await Astro.locals.guards.loggedInOnly();
+        await blogService.submit({
+            ...data,
+            submittedBy: user!.id,
+        });
+        // const resend = new Resend(import.meta.env.RESEND_API_KEY);
+        // await resend.emails.send({
+        //     from: "RWD <noreply@readingweb.dev>",
+        //     to: [import.meta.env.NOTIFICATION_EMAIL],
+        //     subject: "New blog submission",
+        //     html: `<ul>
+        //         <li>Author: ${data.author}</li>
+        //         <li>Title: ${data.title}</li>
+        //         <li>URL: ${data.url}</li>
+        //         <li>Image: ${data.image}</li>
+        //         <li>Description: ${data.description}</li>
+        //         <li>Start year: ${data.start_year}</li>
+        //         <li>Post count: ${data.post_count}</li>
+        //         <li>Tags: ${data.tags}</li>
+        //         <li>Submitter email: ${data.submitter_email}</li>
+        //         <li>Submitter relation: ${data.submitter_relation}</li>
+        //     </ul>`,
+        // });
+    },
+});
 ---
 
-<Layout title="Submit | Reading Web Dev">
-    <main class="px-16 py-6">
-        <section class="mx-auto max-w-screen-xl">
-            <h1 class="text-center text-2xl font-bold leading-none">
-                Submit a blog
-            </h1>
-            <div class="mx-auto mt-12 max-w-lg">
-                <h2 class="text-lg font-bold">Submission criteria</h2>
-                <ul class="mt-2 list-disc pl-4">
-                    <li>Primarily focused on web development</li>
-                    <li>
-                        Is a stand alone website (not Medium or Stack Overflow
-                        etc.)
-                    </li>
-                    <li>Includes at least 10 posts</li>
-                    <li>Updated within the last 10 years</li>
-                    <li>
-                        Author is an individual, not a company or organisation
-                    </li>
-                    <li>Not written by ChatGPT or other AI tools</li>
-                    <li>Writting in English (for now)</li>
-                </ul>
-                <h2 class="mt-8 text-lg font-bold">Steps</h2>
-                <ol class="mt-2 list-decimal pl-4">
-                    <li>
-                        Clone the repo: gh repo clone CamParry/readingwebdev
-                    </li>
-                    <li>
-                        Dulicate src/content/blog-template.md into the
-                        src/content/blogs directory with the filename as the
-                        author name in kebab case
-                    </li>
-                </ol>
-            </div>
-            <!-- <form date-submit-form class="mx-auto mt-12 max-w-lg"> -->
-            <!-- <div class="mt-6 space-y-4">
-                    <label class="block">
-                        <p class="font-bold">Title</p>
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Star Wars"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        />
-                        <p class="mt-1 text-sm text-stone-700">
-                            Use the name of the author if the blog does not have
-                            a title.
-                        </p>
-                    </label>
-                    <label class="mt-6 block">
-                        <p class="font-bold">URL</p>
-                        <input
-                            type="url"
-                            name="title"
-                            placeholder="https://www.starwars.com/news"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        />
-                        <p class="mt-1 text-sm text-stone-700">
-                            If the homepage is not focused on posts, use the
-                            blog listing url instead.
-                        </p>
-                    </label>
-                    <label class="mt-6 block">
-                        <p class="font-bold">Author</p>
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Han Solo"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        />
-                    </label>
-
-                    <label class="mt-6 block">
-                        <p class="font-bold">Description</p>
-                        <textarea
-                            name="body"
-                            placeholder="A long time ago in a galaxy far, far away..."
-                            class="mt-1 block w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        ></textarea>
-                        <p class="mt-1 text-sm text-stone-700">
-                            A sentence or two about the blog, short and sweet.
-                        </p>
-                    </label>
-                    <label class="mt-6 block">
-                        <p class="font-bold">Start year</p>
-                        <input
-                            type="number"
-                            name="title"
-                            placeholder="YYYY"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        />
-                        <p class="mt-1 text-sm text-stone-700">
-                            The year the blog's first post was published.
-                        </p>
-                    </label>
-                    <label class="mt-6 block">
-                        <p class="font-bold">Post count</p>
-                        <select
-                            name="post_count"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        >
-                            <option value="10">10 +</option>
-                            <option value="25">25 +</option>
-                            <option value="50">50 +</option>
-                            <option value="100">100 +</option>
-                            <option value="250">250 +</option>
-                            <option value="500">500 +</option>
-                            <option value="1000">1000 +</option>
-                        </select>
-                        <p class="mt-1 text-sm text-stone-700">
-                            Since this changes frequently select a range. It can
-                            be increased later.
-                        </p>
-                    </label>
-                    <label class="mt-6 block">
-                        <p class="font-bold">Tags</p>
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Frontend, CSS, React"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        />
-                        <p class="mt-1 text-sm text-stone-700">
-                            Max 4 tags, comma separated.
-                        </p>
-                    </label>
-                    <label class="mt-6 block">
-                        <p class="font-bold">Your relation to the blog</p>
-                        <select
-                            name="post_count"
-                            class="mt-1 w-full rounded border-stone-300 bg-stone-200 px-2 py-2"
-                        >
-                            <option value="author">Author</option>
-                            <option value="reader">Reader</option>
-                        </select>
-                        <p class="mt-1 text-sm text-stone-700">
-                            This just helps us know who is submitting the blog.
-                        </p>
-                    </label>
+<Layout title="Submit | not undefined">
+    <PageHeader>
+        <PageTitle>Submit a blog</PageTitle>
+    </PageHeader>
+    <section class="mx-auto mt-12 max-w-lg">
+        {
+            form.isSubmitted ? (
+                <div>
+                    <a
+                        href="/submit"
+                        class="mt-12 flex w-20 items-center gap-2 rounded px-2 py-2 font-bold leading-none hover:bg-stone-200"
+                    >
+                        <ArrowLeft class="size-5" />
+                        Back
+                    </a>
+                    <div class="mt-4 rounded bg-green-100 p-4 text-green-800">
+                        <p>Thank you for your submission!</p>
+                    </div>
+                    <p class="mt-4 px-4">
+                        We will review your submission and get back to you if we
+                        have any questions. If your blog meets the criteria, it
+                        will added to the website.
+                    </p>
                 </div>
-                <button
-                    type="submit"
-                    class="mt-6 flex w-fit items-center justify-center gap-2 rounded bg-stone-800 px-4 py-3 text-center font-bold leading-none text-stone-50 hover:bg-stone-700"
-                >
-                    Submit
-                    <ArrowRight class="size-5" />
-                </button>
-            </form> -->
-        </section>
-    </main>
+            ) : (
+                <div>
+                    <h2 class="text-lg font-bold">Submission criteria</h2>
+                    <ul class="mt-4 list-disc pl-4">
+                        <li>Content is primarily focused on web development</li>
+                        <li>
+                            Is a stand alone website (not Medium or Stack
+                            Overflow etc.)
+                        </li>
+                        <li>Includes at least 10 blog posts</li>
+                        <li>Have posted within the last 10 years</li>
+                        <li>
+                            Author is an individual, not a company or an
+                            organisation
+                        </li>
+                        <li>
+                            Written by a human (not written by ChatGPT or
+                            similar)
+                        </li>
+                        <li>Writting in English (for now)</li>
+                    </ul>
+                    {!user ? (
+                        <div class="mt-6">
+                            <h2 class="text-lg font-bold">
+                                You need to be logged in to submit a blog
+                            </h2>
+                            <button
+                                data-login
+                                class="mt-6 flex w-fit items-center justify-center gap-2 rounded bg-stone-800 px-4 py-3 text-center font-bold leading-none text-stone-50 hover:bg-stone-700"
+                            >
+                                <Github class="size-5" />
+                                Login with GitHub
+                            </button>
+                        </div>
+                    ) : (
+                        <form
+                            method="POST"
+                            class="mt-8 space-y-6 rounded-lg bg-clr-foreground p-6"
+                        >
+                            <h2 class="text-lg font-bold">Submission form</h2>
+                            {form.error && (
+                                <div class="rounded bg-red-200 p-4 text-red-800">
+                                    <p>{form.error}</p>
+                                </div>
+                            )}
+                            <div class="space-y-4">
+                                <Input
+                                    label="Author *"
+                                    name="author"
+                                    value={form.data.author}
+                                    error={form.errors.author}
+                                />
+                                <Input
+                                    label="Title"
+                                    name="title"
+                                    value={form.data.title}
+                                    error={form.errors.title}
+                                    description="If different from the author's name."
+                                />
+                                <Input
+                                    type="url"
+                                    label="URL *"
+                                    name="url"
+                                    value={form.data.url}
+                                    error={form.errors.url}
+                                    description="Homepage or blog page URL."
+                                />
+                                <Input
+                                    type="url"
+                                    label="Image URL"
+                                    name="image"
+                                    value={form.data.image}
+                                    error={form.errors.image}
+                                    description="URL of the blog's logo or author's photo if available, this could be the open graph image. The file will be downloaded locally and hosted on this site."
+                                />
+                                <Textarea
+                                    label="Description *"
+                                    name="description"
+                                    value={form.data.description}
+                                    error={form.errors.description}
+                                    description="A sentence or two about the blog, short and sweet."
+                                />
+                                <Input
+                                    label="Start year *"
+                                    name="startYear"
+                                    value={form.data.start_year}
+                                    error={form.errors.start_year}
+                                    placeholder="YYYY"
+                                    description="The year the blog's first post was published (that is still published)."
+                                />
+                                <Select
+                                    label="Post count *"
+                                    name="postCount"
+                                    value={form.data.post_count}
+                                    error={form.errors.post_count}
+                                    options={postCountOptions.map((option) => ({
+                                        value: option,
+                                        label: option,
+                                    }))}
+                                    description="Select a range. It can be increased later."
+                                />
+                                <Input
+                                    label="Tags *"
+                                    name="tags"
+                                    value={form.data.tags}
+                                    error={form.errors.tags}
+                                    placeholder="e.g. Frontend, CSS, React"
+                                    description="Max 4 tags, comma separated."
+                                />
+                                <Select
+                                    label="Your relation to the blog"
+                                    name="submitterRelation"
+                                    value={form.data.submitterRelation}
+                                    error={form.errors.submitterRelation}
+                                    options={submitterRelationOptions.map(
+                                        (option) => ({
+                                            value: option,
+                                            label: option,
+                                        })
+                                    )}
+                                    description=" This just helps us know who is submitting the blog."
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                class="mt-6 flex w-fit items-center justify-center gap-2 rounded bg-clr-background-inverted px-4 py-3 text-center font-bold leading-none text-clr-text-inverted hover:bg-stone-700"
+                            >
+                                Submit
+                                <ArrowRight class="size-5" />
+                            </button>
+                        </form>
+                    )}
+                </div>
+            )
+        }
+    </section>
 </Layout>

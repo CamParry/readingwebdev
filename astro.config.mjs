@@ -2,6 +2,8 @@ import node from "@astrojs/node";
 import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
 
+import auth from "auth-astro";
+
 // https://astro.build/config
 export default defineConfig({
     site: "https://readingweb.dev",
@@ -11,6 +13,7 @@ export default defineConfig({
                 applyBaseStyles: false,
             },
         }),
+        auth(),
     ],
     output: "server",
     server: {

@@ -1,0 +1,46 @@
+---
+import { userService } from "@/database/models/user";
+import {
+    Layout,
+    Header,
+    Panel,
+    Title,
+    List,
+    ListHeader,
+    ListContent,
+    ListItem,
+    NoResults,
+} from "@/components/admin";
+
+await Astro.locals.guards.adminOnly();
+
+const users = await userService.getAll();
+---
+
+<Layout title="Users | Admin | not undefined">
+    <Header>
+        <Title>Users</Title>
+    </Header>
+    <Panel>
+        {
+            users.length ? (
+                <List>
+                    <ListHeader>
+                        <div>Name</div>
+                        <div>Email</div>
+                    </ListHeader>
+                    <ListContent>
+                        {users.map((user) => (
+                            <ListItem href={`/admin/users/${user.id}`}>
+                                <div>{user.name}</div>
+                                <div>{user.email}</div>
+                            </ListItem>
+                        ))}
+                    </ListContent>
+                </List>
+            ) : (
+                <NoResults>No users found</NoResults>
+            )
+        }
+    </Panel>
+</Layout>

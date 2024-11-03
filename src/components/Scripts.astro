@@ -1,0 +1,64 @@
+<script>
+    const { signIn, signOut } = await import("auth-astro/client");
+
+    document.addEventListener("astro:page-load", () => {
+        // auth
+
+        document.querySelectorAll("[data-login]")?.forEach((button) =>
+            button.addEventListener("click", () => {
+                signIn("github");
+            })
+        );
+        document.querySelectorAll("[data-logout]")?.forEach((button) => {
+            console.log("button", button);
+
+            button.addEventListener("click", () => {
+                signOut({
+                    callbackUrl: "/",
+                });
+            });
+        });
+
+        // theme
+
+        document
+            .querySelector("[data-theme-toggle]")
+            ?.addEventListener("click", () => {
+                if (localStorage.getItem("theme") === "dark") {
+                    document.documentElement.classList.remove("dark");
+                    localStorage.removeItem("theme");
+                } else {
+                    document.documentElement.classList.add("dark");
+                    localStorage.setItem("theme", "dark");
+                }
+            });
+
+        // menu
+
+        const menu = document.querySelector("[data-menu]") as HTMLElement;
+
+        document
+            .querySelector("[data-menu-toggle]")
+            ?.addEventListener("click", () => {
+                menu.classList.toggle("is-active");
+            });
+
+        document.addEventListener("click", (event) => {
+            if (
+                menu.classList.contains("is-active") &&
+                !menu.contains(event.target as Node)
+            ) {
+                menu.classList.remove("is-active");
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (
+                menu.classList.contains("is-active") &&
+                event.key === "Escape"
+            ) {
+                menu.classList.remove("is-active");
+            }
+        });
+    });
+</script>

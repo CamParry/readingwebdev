@@ -4,7 +4,7 @@ import { ArrowUpRightFromSquare, X } from "lucide-astro";
 
 <div
     data-blog-modal
-    class="fixed inset-0 hidden size-full items-center justify-center [&.is-active]:flex"
+    class="fixed inset-0 hidden size-full items-center justify-center p-6 [&.is-active]:flex"
 >
     <div
         data-blog-modal-overlay
@@ -81,15 +81,15 @@ import { ArrowUpRightFromSquare, X } from "lucide-astro";
             link.setAttribute("href", data.url);
         });
         modal.image.setAttribute("src", data.image);
-        modal.image.setAttribute("alt", data.title);
-        modal.title.textContent = data.title;
-        modal.description.textContent = data.description;
+        modal.image.setAttribute("alt", data.author ?? "");
+        modal.title.textContent = data.author ?? "";
+        modal.description.textContent = data.description ?? "";
         modal.tags.innerHTML = data?.tags
             ?.map((t: string) => `<li>${t}</li>`)
             ?.join("");
-        modal.list.innerHTML = data?.bullets
-            ?.map((b: string) => `<li>${b}</li>`)
-            ?.join("");
+        // modal.list.innerHTML = data?.bullets
+        //     ?.map((b: string) => `<li>${b}</li>`)
+        //     ?.join("");
 
         modal.root.classList.add("is-active");
         window.history.pushState({}, "", href);

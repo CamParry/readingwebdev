@@ -1,55 +1,69 @@
 ---
-import { ArrowRight, ArrowUpRightFromSquare } from "lucide-astro";
-import Card from "../components/Card.astro";
-import Layout from "../components/Layout.astro";
-import TagCloud from "../components/TagCloud.astro";
-import { getBlogs } from "../db";
-import BlogModal from "../components/BlogModal.astro";
+import { ArrowRight } from "lucide-astro";
+import BlogModal from "@/components/BlogModal.astro";
+import Card from "@/components/Card.astro";
+import Layout from "@/components/Layout.astro";
+import TagCloud from "@/components/TagCloud.astro";
+import { blogService } from "@/database/models/blog";
+import CardGrid from "@/components/CardGrid.astro";
 
-const blogs = await getBlogs({
-    limit: 12,
-    sort: "daily",
-});
+const blogs = await blogService.getMany({ limit: 9, sort: "daily" });
 ---
 
-<Layout title="Reading Web Dev">
-    <main class="mx-auto flex max-w-screen-xl grow gap-12 py-16">
+<Layout title="not undefined">
+    <div class="flex flex-col gap-12 py-6 md:flex-row md:py-12">
         <aside class="w-64 shrink-0">
             <div>
-                <h2 class="text-lg font-bold">Hey there!</h2>
+                <h2 class="text-lg font-bold">Hey there</h2>
                 <p class="mt-2 leading-relaxed">
                     Welcome, this is a little website dedicated to the discovery
-                    of talented writers in the world of web development.
+                    of the best blogs and writers in the world of web
+                    development.
                 </p>
             </div>
-            <div class="mt-6">
+            <div class="mt-6 hidden md:block">
                 <h3 class="font-bold">Browse by tag</h3>
                 <TagCloud class="mt-4" />
             </div>
             <a
                 href="/submit"
-                class="mt-12 flex h-9 w-fit items-center justify-center gap-2 rounded bg-clr-foreground px-4 py-2 text-center font-bold leading-none transition-all hover:bg-clr-foreground-hover"
+                class="mt-12 hidden h-9 w-fit items-center justify-center gap-2 rounded bg-clr-foreground px-4 py-2 text-center font-bold leading-none transition-all hover:bg-clr-foreground-hover md:flex"
                 >Submit a blog
                 <ArrowRight class="size-4" />
             </a>
         </aside>
-        <div class="space-y-16">
-            <section class="grow">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-lg font-bold">Featured today</h2>
-                    <a
-                        href="/explore"
-                        class="ml-auto flex w-fit items-center gap-1"
-                    >
-                        <span>More</span>
-                        <ArrowRight class="size-4" />
-                    </a>
-                </div>
-                <div class="mt-4 grid grid-cols-4 gap-6">
-                    {blogs.map((blog) => <Card blog={blog} />)}
-                </div>
-            </section>
-        </div>
-    </main>
-    <BlogModal />
+        <section class="grow space-y-6">
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold">Featured today</h2>
+                <a
+                    href="/explore"
+                    class="ml-auto flex w-fit items-center gap-1 hover:underline"
+                >
+                    <span>More</span>
+                    <ArrowRight class="size-4" />
+                </a>
+            </div>
+            {
+                blogs.length ? (
+                    <CardGrid>
+                        {blogs.map((blog) => (
+                            <Card blog={blog} />
+                        ))}
+                    </CardGrid>
+                ) : (
+                    <div class="mt-12">
+                        <h2 class="text-center text-xl font-bold">
+                            No blogs found
+                        </h2>
+                    </div>
+                )
+            }
+            <a
+                href="/submit"
+                class="mt-12 flex h-9 w-fit items-center justify-center gap-2 rounded-lg bg-clr-foreground px-4 py-2 text-center font-bold leading-none transition-all hover:bg-clr-foreground-hover md:hidden"
+                >Submit a blog
+                <ArrowRight class="size-4" />
+            </a>
+        </section>
+    </div>
 </Layout>
